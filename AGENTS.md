@@ -24,3 +24,7 @@ Start with `README.md`, `docs/architecture/system-overview.md`, the target servi
 - ATS scores are internal diagnostics, not guarantees about third-party screening systems.
 - External messages, calendar changes and application submissions require explicit user approval at action time.
 - Update service documentation and contracts together with behavioral changes.
+- Every new, changed or deprecated business behavior must update `docs/business-rules/catalog.md` with its stable `BR-...` identifier in the same delivery.
+- Every new or changed business rule must add or update an executable scenario in `careeros-acceptance-tests`; documentation-only coverage does not count.
+- Update the acceptance repository first, then update the workspace `acceptance-tests` submodule pointer to the tested commit. Never add a new rule to the frozen uncovered-rule baseline.
+- Run `npm run coverage:no-new-gaps` in `acceptance-tests` against the canonical workspace catalog before marking a story complete.

@@ -1,0 +1,30 @@
+name: Business rule traceability
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  business-rules-traceability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git submodule update --init acceptance-tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+        working-directory: acceptance-tests
+        env:
+          CAREEROS_RULES_CATALOG: ../docs/business-rules/catalog.md
+      - run: npm run coverage:no-new-gaps
+        working-directory: acceptance-tests
+        env:
+          CAREEROS_RULES_CATALOG: ../docs/business-rules/catalog.md
