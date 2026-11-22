@@ -1,0 +1,36 @@
+[submodule "apps/web"]
+	path = apps/web
+	url = https://github.com/FievezRomain/careeros-web.git
+	branch = main
+[submodule "services/identity-service"]
+	path = services/identity-service
+	url = https://github.com/FievezRomain/careeros-identity-service.git
+	branch = main
+[submodule "services/profile-service"]
+	path = services/profile-service
+	url = https://github.com/FievezRomain/careeros-profile-service.git
+	branch = main
+[submodule "services/job-service"]
+	path = services/job-service
+	url = https://github.com/FievezRomain/careeros-job-service.git
+	branch = main
+[submodule "services/matching-service"]
+	path = services/matching-service
+	url = https://github.com/FievezRomain/careeros-matching-service.git
+	branch = main
+[submodule "services/resume-service"]
+	path = services/resume-service
+	url = https://github.com/FievezRomain/careeros-resume-service.git
+	branch = main
+[submodule "services/ats-service"]
+	path = services/ats-service
+	url = https://github.com/FievezRomain/careeros-ats-service.git
+	branch = main
+[submodule "services/application-service"]
+	path = services/application-service
+	url = https://github.com/FievezRomain/careeros-application-service.git
+	branch = main
+[submodule "services/communication-service"]
+	path = services/communication-service
+	url = https://github.com/FievezRomain/careeros-communication-service.git
+	branch = main
