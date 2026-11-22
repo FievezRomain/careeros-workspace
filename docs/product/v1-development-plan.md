@@ -59,8 +59,10 @@ V1 is ready to release only when all of the following are true:
 
 ## V1 architecture decisions
 
-- PostgreSQL is the default system of record for V1 business data. Each service owns its database or isolated database namespace and credentials; no service reads another service's tables. JSONB is reserved for source payloads and other genuinely semi-structured values.
-- Resume files and generated documents live in S3-compatible object storage, not in relational columns. Messaging and cache technologies are introduced only for their documented responsibilities.
+- Backend services use Node.js 26 LTS and TypeScript in strict mode, pinned consistently across development, CI and container builds.
+- PostgreSQL 16 is the default system of record for V1 business data. Each service owns a separate logical database, role, credentials and migrations; no service reads another service's persistence. JSONB is reserved for source payloads and other genuinely semi-structured values.
+- RabbitMQ 4.x is the V1 asynchronous broker. Durable flows use explicit retry and dead-letter policies with at-least-once delivery and idempotent consumers.
+- Resume files and generated documents live behind an S3-compatible storage contract, not in relational columns. The local Compose baseline uses a pinned SeaweedFS release; production providers must pass the same contract tests.
 - Keycloak is the identity provider. CareerOS can target a dedicated realm in an existing trusted Keycloak installation or a separate installation without changing service authorization contracts.
 - The functional source of truth is `docs/business-rules/catalog.md`. Executable cross-service scenarios live in `careeros-acceptance-tests` and reference stable business-rule identifiers.
 - Notifications are channel-neutral. The free V1 baseline is an in-app history plus Telegram Bot notifications after explicit account linking. `careeros-communication-service` owns preferences and notification intent; a credential-free workflow definition in `careeros-automation` delivers through n8n's Telegram node. Email is excluded. WhatsApp is outside V1 unless a genuinely no-cost, policy-compliant path is verified later.
