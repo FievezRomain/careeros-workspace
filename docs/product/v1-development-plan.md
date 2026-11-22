@@ -63,6 +63,7 @@ A story is **Ready** when its owner repository, dependencies, acceptance criteri
 | --- | --- | --- | --- |
 | V1-049 | `careeros-workspace` | `story/v1-049-business-rules-catalog` | Dedicated functional business-rule catalog with stable identifiers, examples and traceability policy. |
 | V1-050 | `careeros-acceptance-tests` | `story/v1-050-conformance-harness` | Black-box acceptance harness and rule-to-scenario traceability validation. |
+| V1-054 | `careeros-workspace` | `story/v1-054-business-rule-traceability` | Mandatory workspace invariant and CI gate requiring catalog updates plus executable acceptance coverage for every new business rule. |
 
 ## Epic 1 — Identity, profile and onboarding
 

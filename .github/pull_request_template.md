@@ -16,6 +16,9 @@ Describe the user-visible or architectural outcome, not only the implementation.
 - [ ] Acceptance criteria are covered.
 - [ ] Success, validation and authorization-denial paths are tested.
 - [ ] Public contracts and documentation are updated when affected.
+- [ ] Business behavior is unchanged, or `docs/business-rules/catalog.md` is updated with stable `BR-...` identifiers.
+- [ ] Every added or changed business rule has an executable scenario in `careeros-acceptance-tests`.
+- [ ] The `acceptance-tests` submodule points to the tested acceptance commit and `coverage:no-new-gaps` passes.
 - [ ] No secret, real CV, real application or personal data is included.
 - [ ] Logs redact payloads and preserve correlation identifiers.
 - [ ] CI is green and local verification steps are documented.
