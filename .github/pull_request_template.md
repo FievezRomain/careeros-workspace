@@ -22,6 +22,9 @@ Describe the user-visible or architectural outcome, not only the implementation.
 - [ ] No secret, real CV, real application or personal data is included.
 - [ ] Logs redact payloads and preserve correlation identifiers.
 - [ ] CI is green and local verification steps are documented.
+- [ ] Python service changes pass the executable service baseline and every command declared in `[tool.careeros.quality]`.
+- [ ] Judgment-based findings were reviewed with `code-quality-review` (P0-P3), plus the relevant domain/security skill.
+- [ ] Hexagonal dependencies point inward; boundary DTOs, messages and settings use Pydantic v2.
 
 ## PR budget
 

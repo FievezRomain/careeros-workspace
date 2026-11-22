@@ -29,3 +29,17 @@ Start with `README.md`, `docs/architecture/system-overview.md`, the target servi
 - Every new or changed business rule must add or update an executable scenario in `careeros-acceptance-tests`; documentation-only coverage does not count.
 - Update the acceptance repository first, then update the workspace `acceptance-tests` submodule pointer to the tested commit. Never add a new rule to the frozen uncovered-rule baseline.
 - Run `npm run coverage:no-new-gaps` in `acceptance-tests` against the canonical workspace catalog before marking a story complete.
+
+## Code Review Rules
+
+### Service boundaries
+
+- Flag domain or application code that imports frameworks, persistence, transport, identity-provider or queue adapters. The safe path is an inward dependency through a port, with wiring confined to the composition root.
+
+### Trusted data
+
+- Flag unvalidated data crossing a service boundary or configuration loaded without Pydantic v2. Boundary DTOs, messages and settings use Pydantic; behavior-rich domain objects may remain plain classes.
+
+### Consequential actions
+
+- Flag any external message, calendar change or application submission that can bypass explicit approval, idempotency or audit evidence. The safe path preserves an approval-time authorization check and a retry-safe idempotency key.

@@ -20,6 +20,7 @@ git submodule update --init --recursive
 - [Functional business-rule catalog](docs/business-rules/catalog.md)
 - [System overview](docs/architecture/system-overview.md)
 - [Architecture decisions](docs/decisions/)
+- [Python service quality baseline](docs/quality/python-service-baseline.md)
 
 Business rules describe observable product behavior without implementation details. The `careeros-acceptance-tests` repository provides their executable cross-service traceability and V1 non-regression gate.
 
