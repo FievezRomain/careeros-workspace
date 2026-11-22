@@ -1,6 +1,6 @@
 # ADR 0004: V1 backend runtime and platform dependencies
 
-- Status: accepted for V1
+- Status: accepted for V1; backend runtime superseded by [ADR 0005](0005-python-hexagonal-backend.md)
 - Date: 2026-11-22
 
 ## Context
@@ -12,6 +12,8 @@ The V1 workload is a set of independently deployable services with modest throug
 ## Decision
 
 ### Backend runtime
+
+This historical runtime decision is superseded by [ADR 0005](0005-python-hexagonal-backend.md).
 
 Backend services use Node.js 26 LTS and TypeScript in strict mode. Each repository pins the Node.js major and a current security patch in its development, CI and container configuration. A service may use a different runtime only through a new ADR that explains the operational and contract impact.
 
