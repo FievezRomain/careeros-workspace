@@ -1,0 +1,85 @@
+name: V1 user story
+description: A small, independently reviewable CareerOS V1 delivery unit.
+title: "[V1-NNN] "
+labels:
+  - "type:story"
+  - "release:v1"
+body:
+  - type: markdown
+    attributes:
+      value: "One story should normally produce one branch and one pull request in one repository."
+  - type: input
+    id: parent
+    attributes:
+      label: Parent feature
+      description: Link the feature issue in careeros-workspace.
+      placeholder: "#123"
+    validations:
+      required: true
+  - type: dropdown
+    id: repository
+    attributes:
+      label: Owning repository
+      options:
+        - careeros-workspace
+        - careeros-web
+        - careeros-identity-service
+        - careeros-profile-service
+        - careeros-job-service
+        - careeros-matching-service
+        - careeros-resume-service
+        - careeros-ats-service
+        - careeros-application-service
+        - careeros-communication-service
+        - careeros-analytics-service
+        - careeros-ai-gateway
+        - careeros-automation
+        - careeros-infrastructure
+    validations:
+      required: true
+  - type: input
+    id: branch
+    attributes:
+      label: Dedicated branch
+      placeholder: story/v1-NNN-short-slug
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: User or system outcome
+      description: State the observable result and why it matters.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: "- [ ] Given ... when ... then ..."
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Explicitly out of scope
+      description: Record nearby work that must not enter this PR.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and contracts
+      description: Link blocking stories, ADRs, APIs, events or schemas.
+  - type: checkboxes
+    id: ready
+    attributes:
+      label: Definition of Ready
+      options:
+        - label: The owning repository and branch are identified.
+          required: true
+        - label: Acceptance criteria are testable.
+          required: true
+        - label: The story fits within 400 changed lines, 8 hand-edited files and one migration, or will be split.
+          required: true
+        - label: Security, privacy and approval impacts are identified.
+          required: true

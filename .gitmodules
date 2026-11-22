@@ -50,3 +50,6 @@
 	path = infrastructure
 	url = https://github.com/FievezRomain/careeros-infrastructure.git
 	branch = main
+[submodule "acceptance-tests"]
+	path = acceptance-tests
+	url = https://github.com/FievezRomain/careeros-acceptance-tests.git
