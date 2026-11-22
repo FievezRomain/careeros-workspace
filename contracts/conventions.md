@@ -212,7 +212,7 @@ Each implemented event provides automated evidence for:
 - retry exhaustion, dead-letter routing and authorized replay when applicable;
 - rejection of invalid or unsupported schema versions without unsafe side effects.
 
-V1-008 adds repository-wide schema linting and compatibility gates. Until then, reviewers verify these conventions and the service-local contract tests. This document changes integration conventions only; it does not add or change a CareerOS business rule.
+Repository CI validates OpenAPI 3.1.2, AsyncAPI 3.1.0 and JSON Schema 2020-12 documents with pinned native tooling. It also rejects structural removals, narrowed enums, newly required fields and stable type/reference changes inside an existing major version. Reviewers still verify producer/consumer impact and service-local contract tests. This document changes integration conventions only; it does not add or change a CareerOS business rule.
 
 ## References
 
