@@ -59,7 +59,7 @@ V1 is ready to release only when all of the following are true:
 
 ## V1 architecture decisions
 
-- Backend services use Node.js 26 LTS and TypeScript in strict mode, pinned consistently across development, CI and container builds.
+- Backend services use Python 3.14, Pydantic v2 and hexagonal architecture, pinned consistently across development, CI and container builds. TypeScript remains the web and workspace-tooling language.
 - PostgreSQL 16 is the default system of record for V1 business data. Each service owns a separate logical database, role, credentials and migrations; no service reads another service's persistence. JSONB is reserved for source payloads and other genuinely semi-structured values.
 - RabbitMQ 4.x is the V1 asynchronous broker. Durable flows use explicit retry and dead-letter policies with at-least-once delivery and idempotent consumers.
 - Resume files and generated documents live behind an S3-compatible storage contract, not in relational columns. The local Compose baseline uses a pinned SeaweedFS release; production providers must pass the same contract tests.
@@ -107,8 +107,10 @@ A story is **Ready** when its owner repository, dependencies, acceptance criteri
 
 | Key | Repository | Branch | Deliverable |
 | --- | --- | --- | --- |
-| V1-007 | `careeros-workspace` | `story/v1-007-service-checklist` | Executable service checklist covering layout, tests, migrations, logs and security gates. |
+| V1-007 | `careeros-workspace` | `story/v1-007-service-checklist` | Executable service checklist covering layout, tests, migrations, logs and security gates, plus reusable code-quality PR review guidance. |
 | V1-008 | `careeros-workspace` | `story/v1-008-contract-ci` | CI validation for OpenAPI, AsyncAPI and JSON Schema contracts. |
+
+V1-007 separates deterministic enforcement from judgment-based review. CI enforces formatter, lint, type, test, migration and security checks; the `code-quality-review` skill reviews correctness, hexagonal boundaries, SOLID tradeoffs, appropriate design patterns, maintainability and language-specific modeling. A GitHub integration or workflow must invoke the agent for automatic PR reviews; installing a skill alone does not create an external trigger.
 
 ### Feature 0.4 — Business rules and executable conformance
 

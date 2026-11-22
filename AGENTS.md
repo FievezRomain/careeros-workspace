@@ -12,6 +12,7 @@ Start with `README.md`, `docs/architecture/system-overview.md`, the target servi
 - Resume generation or ATS reports: use `ats-resume-validation`.
 - Credentials, privacy, tenancy or logging: use `security-privacy`.
 - Tests and release quality: use `testing-quality`.
+- Code quality or pull-request review: use `code-quality-review` plus the relevant domain skill.
 - Documentation maintenance: use `documentation`.
 - n8n workflows: use `n8n-workflows`.
 
