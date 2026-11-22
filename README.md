@@ -23,6 +23,18 @@ git submodule update --init --recursive
 
 Business rules describe observable product behavior without implementation details. The `careeros-acceptance-tests` repository provides their executable cross-service traceability and V1 non-regression gate.
 
+### Mandatory business-rule workflow
+
+Every new, changed or deprecated business behavior is delivered as one traceable set:
+
+1. add or update the stable `BR-...` entry in the canonical catalog;
+2. add or update its executable scenario in `careeros-acceptance-tests`;
+3. merge or otherwise make the tested acceptance commit available;
+4. update the workspace `acceptance-tests` submodule pointer;
+5. pass the mandatory `business-rules-traceability` check.
+
+The initial uncovered-rule baseline can only shrink. A new catalog rule without acceptance coverage fails CI.
+
 ## Repository map
 
 | Area | Repository |
