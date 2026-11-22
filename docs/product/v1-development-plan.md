@@ -12,7 +12,7 @@ V1 does not attempt generic browser automation against arbitrary job boards. Ext
 - Resume files and generated documents live in S3-compatible object storage, not in relational columns. Messaging and cache technologies are introduced only for their documented responsibilities.
 - Keycloak is the identity provider. CareerOS can target a dedicated realm in an existing trusted Keycloak installation or a separate installation without changing service authorization contracts.
 - The functional source of truth is `docs/business-rules/catalog.md`. Executable cross-service scenarios live in `careeros-acceptance-tests` and reference stable business-rule identifiers.
-- Notifications are channel-neutral. In-app delivery is the V1 baseline; email and WhatsApp are adapters enabled only with user opt-in, provider eligibility and explicit cost/configuration approval.
+- Notifications are channel-neutral. In-app delivery and standards-based Web Push are the free V1 baseline. Email can be used as a fallback within an explicitly monitored free allowance. WhatsApp is outside V1 unless a genuinely no-cost, policy-compliant path is verified later.
 
 ## Delivery model
 
@@ -154,7 +154,7 @@ A story is **Ready** when its owner repository, dependencies, acceptance criteri
 | V1-039 | `careeros-automation` | `story/v1-039-followup-workflow` | Credential-free n8n follow-up workflow with approval gate and retries. |
 | V1-040 | `careeros-web` | `story/v1-040-application-pipeline-ui` | Application pipeline, approval and status UI. |
 | V1-051 | `careeros-communication-service` | `story/v1-051-notification-preferences` | Notification preferences, consent, quiet hours, deduplication and digest policy. |
-| V1-052 | `careeros-communication-service` | `story/v1-052-notification-channel` | In-app notification baseline and provider-neutral delivery contract; optional WhatsApp adapter remains separately configurable. |
+| V1-052 | `careeros-communication-service` | `story/v1-052-notification-channel` | In-app and Web Push notification baseline with provider-neutral delivery contract and free-tier email fallback. |
 
 ## Epic 5 — Analytics, hardening and release
 

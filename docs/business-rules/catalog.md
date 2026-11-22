@@ -98,7 +98,7 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | BR-COM-005 | A follow-up becomes due from the last meaningful application activity and the person's chosen delay; it is cancelled when the application reaches a terminal state. |
 | BR-COM-006 | A due follow-up creates a draft or reminder, never an unapproved external message. |
 | BR-COM-007 | The person can enable or disable each notification category and delivery channel independently. |
-| BR-COM-008 | In-app notification is the baseline channel. Email, WhatsApp or another external channel is used only after explicit opt-in and successful verification of the destination. |
+| BR-COM-008 | In-app notification and Web Push are the V1 baseline channels. Email fallback is used only after explicit opt-in, successful destination verification and confirmation that the configured free allowance is not exceeded. |
 | BR-COM-009 | Equivalent events occurring close together are grouped so that the person is not notified repeatedly about the same change. |
 | BR-COM-010 | Quiet hours defer non-urgent notifications until the next allowed period; CareerOS has no V1 event that overrides quiet hours as an emergency. |
 | BR-COM-011 | A notification states why it was sent and provides a direct way to view the related opportunity or application. |
