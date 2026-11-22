@@ -6,6 +6,57 @@ A user can authenticate, build a verified professional profile, record a job opp
 
 V1 does not attempt generic browser automation against arbitrary job boards. External messages or submissions are executed only through an explicitly supported adapter and after action-time user approval.
 
+## V1 scope
+
+V1 includes one reviewable end-to-end journey that lets a user:
+
+- authenticate and access only resources they own;
+- maintain a professional profile whose facts carry validation status and provenance;
+- capture and normalize a job opportunity with its source provenance;
+- receive an explainable match based on versioned profile and job snapshots;
+- generate one ATS-safe PDF template and a DOCX export using verified facts only;
+- obtain a versioned ATS report with deterministic findings, evidence and honest limitations;
+- create, approve and track an application package without autonomous submission;
+- prepare and explicitly approve a follow-up before delivery through one supported adapter;
+- receive in-app notifications and, after explicit account linking, Telegram Bot notifications;
+- view privacy-conscious funnel aggregates that exclude raw resume and application content.
+
+## V1 non-goals
+
+V1 explicitly excludes:
+
+- generic browser automation or support for arbitrary job boards;
+- autonomous, bulk or approval-free applications, messages and calendar changes;
+- facts invented by a model, unvalidated model output or claims that an ATS score predicts a third-party screening decision;
+- email delivery and WhatsApp integration;
+- multiple resume templates, broad provider coverage or a marketplace of delivery adapters;
+- cross-service database access, shared service schemas or unversioned public integration contracts;
+- multi-region operation, internet-scale capacity and production availability guarantees.
+
+## V1 quality attributes
+
+- **User control:** every consequential external action requires explicit approval at action time.
+- **Security and isolation:** authentication context, authorization and ownership are validated at every service boundary; each service owns isolated persistence.
+- **Privacy:** logs redact sensitive payloads, analytics minimize stored data, and repositories and tests contain only synthetic fixtures.
+- **Grounding and explainability:** generated content is traceable to verified profile facts, rankings expose evidence and uncertainty, and ATS findings state their limits.
+- **Reliability:** external side effects are idempotent, retry-safe and auditable; deterministic rules remain the authority for validation and state transitions.
+- **Interoperability:** public APIs, events and schemas are versioned, and services integrate only through those contracts.
+- **Testability:** the complete journey is reproducible through black-box acceptance tests without direct database access or live provider side effects.
+- **Operability:** services expose health and readiness signals, propagate correlation identifiers without sensitive content, and the release includes a tested backup and restore procedure.
+
+## V1 success criteria
+
+V1 is ready to release only when all of the following are true:
+
+1. A synthetic user completes the full V1 journey through public contracts in the repeatable black-box acceptance suite.
+2. Acceptance coverage includes the journey's success path plus applicable validation failures and authorization denials, and `coverage:no-new-gaps` reports no newly uncovered business rule.
+3. No application, message or other consequential external action can occur without a current explicit approval; repeated delivery requests do not duplicate the side effect.
+4. Generated resume content is validated against verified profile facts, and match and ATS results retain evidence, provenance and limitations.
+5. Service, contract, security and documentation checks pass in CI with no committed secret or real personal, resume or application data.
+6. The V1 security review finds no unresolved release-blocking authorization, tenancy, privacy, secret-handling or audit issue.
+7. The documented backup and restore smoke test succeeds for the V1 system-of-record data and artifact metadata.
+8. Known limitations are published, all V1 pull requests respect the delivery budget or document an approved split, and the release checklist is complete.
+
 ## V1 architecture decisions
 
 - PostgreSQL is the default system of record for V1 business data. Each service owns its database or isolated database namespace and credentials; no service reads another service's tables. JSONB is reserved for source payloads and other genuinely semi-structured values.
