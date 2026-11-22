@@ -4,6 +4,8 @@ Central model policy, redaction, quotas, audit metadata and fallbacks.
 
 Repository: https://github.com/FievezRomain/careeros-ai-gateway
 
+Example: expose a stable `extract-job-requirements` capability and route it to OpenAI, Claude or a local model according to policy, while normalizing schemas, errors, quotas and provenance. Provider-specific capabilities remain explicit.
+
 ## Shared rules
 
 - Version all public contracts.

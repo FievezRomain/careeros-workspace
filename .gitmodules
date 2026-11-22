@@ -34,3 +34,19 @@
 	path = services/communication-service
 	url = https://github.com/FievezRomain/careeros-communication-service.git
 	branch = main
+[submodule "services/analytics-service"]
+	path = services/analytics-service
+	url = https://github.com/FievezRomain/careeros-analytics-service.git
+	branch = main
+[submodule "services/ai-gateway"]
+	path = services/ai-gateway
+	url = https://github.com/FievezRomain/careeros-ai-gateway.git
+	branch = main
+[submodule "automation/n8n"]
+	path = automation/n8n
+	url = https://github.com/FievezRomain/careeros-automation.git
+	branch = main
+[submodule "infrastructure"]
+	path = infrastructure
+	url = https://github.com/FievezRomain/careeros-infrastructure.git
+	branch = main

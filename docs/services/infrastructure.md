@@ -4,6 +4,8 @@ Local development and deployment configuration without secrets.
 
 Repository: https://github.com/FievezRomain/careeros-infrastructure
 
+Initial scope: Docker Compose, health checks, local networks, reverse proxy and observability. Idempotent install, migration, backup and restore scripts can be added when needed; heavier orchestration is introduced only when justified.
+
 ## Shared rules
 
 - Version all public contracts.
