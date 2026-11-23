@@ -1,0 +1,284 @@
+openapi: 3.1.2
+info:
+  title: CareerOS Profile API
+  version: 1.0.0
+  description: Owned CRUD for structured experience, education and skill profile items.
+servers:
+  - url: https://profile.example.invalid
+tags:
+  - name: Profile items
+security:
+  - oidc: [profile:read, profile:write]
+paths:
+  /v1/profile/items:
+    get:
+      tags: [Profile items]
+      operationId: listProfileItems
+      summary: List the authenticated account's profile items
+      description: Returns only items owned by the authenticated account in its tenant, ordered by creation time and opaque identifier.
+      parameters:
+        - $ref: '#/components/parameters/Kind'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Owned profile items.
+          headers:
+            X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileItemPage' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+    post:
+      tags: [Profile items]
+      operationId: createProfileItem
+      summary: Create an owned profile item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProfileItemInput' }
+      responses:
+        '201':
+          description: Profile item created.
+          headers:
+            Location: { $ref: '#/components/headers/Location' }
+            X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileItem' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+  /v1/profile/items/{itemId}:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    get:
+      tags: [Profile items]
+      operationId: getProfileItem
+      summary: Read one owned profile item
+      responses:
+        '200':
+          description: Owned profile item.
+          headers:
+            X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileItem' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Profile items]
+      operationId: replaceProfileItem
+      summary: Replace one owned profile item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProfileItemInput' }
+      responses:
+        '200':
+          description: Profile item replaced.
+          headers:
+            X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileItem' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+    delete:
+      tags: [Profile items]
+      operationId: deleteProfileItem
+      summary: Delete one owned profile item
+      responses:
+        '204':
+          description: Profile item deleted.
+          headers:
+            X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.example.invalid/realms/careeros/.well-known/openid-configuration
+  parameters:
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    Kind:
+      name: kind
+      in: query
+      description: Optional closed V1 item-kind filter.
+      schema: { $ref: '#/components/schemas/ProfileItemKind' }
+    PageSize:
+      name: pageSize
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+    Cursor:
+      name: cursor
+      in: query
+      schema: { type: string, minLength: 1, maxLength: 512 }
+  headers:
+    CorrelationId:
+      description: Request correlation identifier.
+      schema: { type: string, format: uuid }
+    Location:
+      description: Relative location of the created item.
+      schema: { type: string }
+  responses:
+    Unauthenticated:
+      description: Missing, invalid or expired credentials.
+      headers:
+        WWW-Authenticate:
+          schema: { type: string }
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: Authenticated account lacks the required profile scope.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Item absent or not owned by the authenticated account.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    ValidationFailed:
+      description: Request violates profile constraints.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    ProfileItemKind:
+      type: string
+      enum: [experience, education, skill]
+    ProfileItemInput:
+      oneOf:
+        - $ref: '#/components/schemas/ExperienceInput'
+        - $ref: '#/components/schemas/EducationInput'
+        - $ref: '#/components/schemas/SkillInput'
+      discriminator:
+        propertyName: kind
+        mapping:
+          experience: '#/components/schemas/ExperienceInput'
+          education: '#/components/schemas/EducationInput'
+          skill: '#/components/schemas/SkillInput'
+    ProfileItem:
+      oneOf:
+        - $ref: '#/components/schemas/Experience'
+        - $ref: '#/components/schemas/Education'
+        - $ref: '#/components/schemas/Skill'
+      discriminator:
+        propertyName: kind
+        mapping:
+          experience: '#/components/schemas/Experience'
+          education: '#/components/schemas/Education'
+          skill: '#/components/schemas/Skill'
+    ProfileItemPage:
+      type: object
+      additionalProperties: false
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ProfileItem' }
+        page:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor: { type: string }
+    DatedItem:
+      type: object
+      required: [startDate, current]
+      properties:
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        current: { type: boolean }
+    ExperienceInput:
+      allOf:
+        - $ref: '#/components/schemas/DatedItem'
+        - type: object
+          additionalProperties: false
+          required: [kind, title, employer]
+          properties:
+            kind: { const: experience }
+            title: { type: string, minLength: 1, maxLength: 200 }
+            employer: { type: string, minLength: 1, maxLength: 200 }
+            description: { type: string, maxLength: 4000 }
+    EducationInput:
+      allOf:
+        - $ref: '#/components/schemas/DatedItem'
+        - type: object
+          additionalProperties: false
+          required: [kind, institution, qualification]
+          properties:
+            kind: { const: education }
+            institution: { type: string, minLength: 1, maxLength: 200 }
+            qualification: { type: string, minLength: 1, maxLength: 200 }
+            fieldOfStudy: { type: string, maxLength: 200 }
+    SkillInput:
+      type: object
+      additionalProperties: false
+      required: [kind, name]
+      properties:
+        kind: { const: skill }
+        name: { type: string, minLength: 1, maxLength: 120 }
+        level: { type: string, enum: [beginner, intermediate, advanced, expert] }
+    ItemIdentity:
+      type: object
+      required: [itemId, createdAt, updatedAt]
+      properties:
+        itemId: { type: string, format: uuid }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    Experience:
+      allOf:
+        - $ref: '#/components/schemas/ExperienceInput'
+        - $ref: '#/components/schemas/ItemIdentity'
+    Education:
+      allOf:
+        - $ref: '#/components/schemas/EducationInput'
+        - $ref: '#/components/schemas/ItemIdentity'
+    Skill:
+      allOf:
+        - $ref: '#/components/schemas/SkillInput'
+        - $ref: '#/components/schemas/ItemIdentity'
+        - type: object
+          additionalProperties: false
+          properties:
+            levelSource: { type: string, const: selfDeclared }
+        - type: object
+          properties:
+            levelSource: { type: string, const: selfDeclared }
+    Problem:
+      type: object
+      additionalProperties: false
+      required: [type, title, status, detail, instance, code, correlationId]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer, minimum: 400, maximum: 599 }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+        code: { type: string, pattern: '^[A-Z][A-Z0-9_]*$' }
+        correlationId: { type: string, minLength: 1, maxLength: 128 }
+        errors:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [pointer, code, message]
+            properties:
+              pointer: { type: string }
+              code: { type: string }
+              message: { type: string }
