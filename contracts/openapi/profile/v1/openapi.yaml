@@ -1,18 +1,19 @@
 openapi: 3.1.2
 info:
   title: CareerOS Profile API
-  version: 1.0.0
-  description: Owned CRUD for structured experience, education and skill profile items.
+  version: 1.1.0
+  description: Owned profile facts with provenance, confirmation and immutable snapshots.
 servers:
   - url: https://profile.example.invalid
 tags:
   - name: Profile items
-security:
-  - oidc: [profile:read, profile:write]
+  - name: Profile snapshots
 paths:
   /v1/profile/items:
     get:
       tags: [Profile items]
+      security:
+        - oidc: [profile:read]
       operationId: listProfileItems
       summary: List the authenticated account's profile items
       description: Returns only items owned by the authenticated account in its tenant, ordered by creation time and opaque identifier.
@@ -33,8 +34,14 @@ paths:
         '422': { $ref: '#/components/responses/ValidationFailed' }
     post:
       tags: [Profile items]
+      security:
+        - oidc: [profile:write]
       operationId: createProfileItem
       summary: Create an owned profile item
+      description: >-
+        Omitted provenance means directEntry and starts userConfirmed. Resume imports and
+        generated suggestions require a sourceId and start unconfirmed. userCorrection is
+        server-owned and rejected on creation.
       requestBody:
         required: true
         content:
@@ -57,6 +64,8 @@ paths:
       - $ref: '#/components/parameters/ItemId'
     get:
       tags: [Profile items]
+      security:
+        - oidc: [profile:read]
       operationId: getProfileItem
       summary: Read one owned profile item
       responses:
@@ -72,8 +81,11 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
     put:
       tags: [Profile items]
+      security:
+        - oidc: [profile:write]
       operationId: replaceProfileItem
       summary: Replace one owned profile item
+      description: Records userCorrection provenance and userConfirmed status server-side.
       requestBody:
         required: true
         content:
@@ -93,6 +105,8 @@ paths:
         '422': { $ref: '#/components/responses/ValidationFailed' }
     delete:
       tags: [Profile items]
+      security:
+        - oidc: [profile:write]
       operationId: deleteProfileItem
       summary: Delete one owned profile item
       responses:
@@ -100,6 +114,72 @@ paths:
           description: Profile item deleted.
           headers:
             X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /v1/profile/items/{itemId}/confirmation:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    put:
+      tags: [Profile items]
+      security:
+        - oidc: [profile:write]
+      operationId: confirmProfileItem
+      summary: Confirm one owned profile fact
+      description: Idempotently marks the current fact value as explicitly confirmed by its owner.
+      responses:
+        '200':
+          description: The user-confirmed profile item.
+          headers:
+            X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileItem' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /v1/profile/snapshots:
+    post:
+      tags: [Profile snapshots]
+      security:
+        - oidc: [profile:write]
+      operationId: createProfileSnapshot
+      summary: Capture an immutable snapshot of the owned profile
+      description: >-
+        Atomically captures every current owned profile item with its provenance and validation
+        status. The idempotency outcome is retained for at least 24 hours.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '201':
+          description: Snapshot created, or the original successful response replayed.
+          headers:
+            Location: { $ref: '#/components/headers/Location' }
+            X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileSnapshot' }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /v1/profile/snapshots/{snapshotId}:
+    parameters:
+      - $ref: '#/components/parameters/SnapshotId'
+    get:
+      tags: [Profile snapshots]
+      security:
+        - oidc: [profile:read]
+      operationId: getProfileSnapshot
+      summary: Read one immutable owned profile snapshot
+      responses:
+        '200':
+          description: Owned immutable profile snapshot.
+          headers:
+            X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileSnapshot' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
@@ -114,6 +194,21 @@ components:
       in: path
       required: true
       schema: { type: string, format: uuid }
+    SnapshotId:
+      name: snapshotId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Opaque retry key scoped to the authenticated account and snapshot operation.
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 128
+        pattern: '^[A-Za-z0-9._:-]+$'
     Kind:
       name: kind
       in: query
@@ -135,6 +230,11 @@ components:
       description: Relative location of the created item.
       schema: { type: string }
   responses:
+    InvalidRequest:
+      description: Required idempotency metadata is missing or malformed.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
     Unauthenticated:
       description: Missing, invalid or expired credentials.
       headers:
@@ -149,12 +249,17 @@ components:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
     NotFound:
-      description: Item absent or not owned by the authenticated account.
+      description: Resource absent or not owned by the authenticated account.
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
     ValidationFailed:
       description: Request violates profile constraints.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The idempotency key is already bound to a different effective request.
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
@@ -197,6 +302,43 @@ components:
           additionalProperties: false
           properties:
             nextCursor: { type: string }
+    FactOrigin:
+      type: string
+      enum: [directEntry, resumeImport, generatedSuggestion, userCorrection]
+    FactValidationStatus:
+      type: string
+      enum: [unconfirmed, userConfirmed]
+    FactProvenanceInput:
+      oneOf:
+        - type: object
+          additionalProperties: false
+          required: [origin]
+          properties:
+            origin: { const: directEntry }
+        - type: object
+          additionalProperties: false
+          required: [origin, sourceId]
+          properties:
+            origin: { type: string, enum: [resumeImport, generatedSuggestion] }
+            sourceId: { type: string, minLength: 1, maxLength: 200 }
+    FactProvenance:
+      type: object
+      additionalProperties: false
+      required: [origin, recordedAt]
+      properties:
+        origin: { $ref: '#/components/schemas/FactOrigin' }
+        sourceId: { type: string, minLength: 1, maxLength: 200 }
+        recordedAt: { type: string, format: date-time }
+    ProfileFactInputMetadata:
+      type: object
+      properties:
+        provenance: { $ref: '#/components/schemas/FactProvenanceInput' }
+    ProfileFactMetadata:
+      type: object
+      required: [provenance, validationStatus]
+      properties:
+        provenance: { $ref: '#/components/schemas/FactProvenance' }
+        validationStatus: { $ref: '#/components/schemas/FactValidationStatus' }
     DatedItem:
       type: object
       required: [startDate, current]
@@ -204,36 +346,53 @@ components:
         startDate: { type: string, format: date }
         endDate: { type: string, format: date }
         current: { type: boolean }
-    ExperienceInput:
-      allOf:
-        - $ref: '#/components/schemas/DatedItem'
-        - type: object
-          additionalProperties: false
-          required: [kind, title, employer]
-          properties:
-            kind: { const: experience }
-            title: { type: string, minLength: 1, maxLength: 200 }
-            employer: { type: string, minLength: 1, maxLength: 200 }
-            description: { type: string, maxLength: 4000 }
-    EducationInput:
-      allOf:
-        - $ref: '#/components/schemas/DatedItem'
-        - type: object
-          additionalProperties: false
-          required: [kind, institution, qualification]
-          properties:
-            kind: { const: education }
-            institution: { type: string, minLength: 1, maxLength: 200 }
-            qualification: { type: string, minLength: 1, maxLength: 200 }
-            fieldOfStudy: { type: string, maxLength: 200 }
-    SkillInput:
+    DatedItemFields:
       type: object
-      additionalProperties: false
+      required: [startDate, current]
+      properties:
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        current: { type: boolean }
+    ExperienceFields:
+      type: object
+      required: [kind, title, employer]
+      properties:
+        kind: { const: experience }
+        title: { type: string, minLength: 1, maxLength: 200 }
+        employer: { type: string, minLength: 1, maxLength: 200 }
+        description: { type: string, maxLength: 4000 }
+    EducationFields:
+      type: object
+      required: [kind, institution, qualification]
+      properties:
+        kind: { const: education }
+        institution: { type: string, minLength: 1, maxLength: 200 }
+        qualification: { type: string, minLength: 1, maxLength: 200 }
+        fieldOfStudy: { type: string, maxLength: 200 }
+    SkillFields:
+      type: object
       required: [kind, name]
       properties:
         kind: { const: skill }
         name: { type: string, minLength: 1, maxLength: 120 }
         level: { type: string, enum: [beginner, intermediate, advanced, expert] }
+    ExperienceInput:
+      allOf:
+        - $ref: '#/components/schemas/DatedItemFields'
+        - $ref: '#/components/schemas/ExperienceFields'
+        - $ref: '#/components/schemas/ProfileFactInputMetadata'
+      unevaluatedProperties: false
+    EducationInput:
+      allOf:
+        - $ref: '#/components/schemas/DatedItemFields'
+        - $ref: '#/components/schemas/EducationFields'
+        - $ref: '#/components/schemas/ProfileFactInputMetadata'
+      unevaluatedProperties: false
+    SkillInput:
+      allOf:
+        - $ref: '#/components/schemas/SkillFields'
+        - $ref: '#/components/schemas/ProfileFactInputMetadata'
+      unevaluatedProperties: false
     ItemIdentity:
       type: object
       required: [itemId, createdAt, updatedAt]
@@ -243,23 +402,37 @@ components:
         updatedAt: { type: string, format: date-time }
     Experience:
       allOf:
-        - $ref: '#/components/schemas/ExperienceInput'
+        - $ref: '#/components/schemas/DatedItemFields'
+        - $ref: '#/components/schemas/ExperienceFields'
         - $ref: '#/components/schemas/ItemIdentity'
+        - $ref: '#/components/schemas/ProfileFactMetadata'
+      unevaluatedProperties: false
     Education:
       allOf:
-        - $ref: '#/components/schemas/EducationInput'
+        - $ref: '#/components/schemas/DatedItemFields'
+        - $ref: '#/components/schemas/EducationFields'
         - $ref: '#/components/schemas/ItemIdentity'
+        - $ref: '#/components/schemas/ProfileFactMetadata'
+      unevaluatedProperties: false
     Skill:
       allOf:
-        - $ref: '#/components/schemas/SkillInput'
+        - $ref: '#/components/schemas/SkillFields'
         - $ref: '#/components/schemas/ItemIdentity'
         - type: object
-          additionalProperties: false
           properties:
             levelSource: { type: string, const: selfDeclared }
-        - type: object
-          properties:
-            levelSource: { type: string, const: selfDeclared }
+        - $ref: '#/components/schemas/ProfileFactMetadata'
+      unevaluatedProperties: false
+    ProfileSnapshot:
+      type: object
+      additionalProperties: false
+      required: [snapshotId, createdAt, items]
+      properties:
+        snapshotId: { type: string, format: uuid }
+        createdAt: { type: string, format: date-time }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ProfileItem' }
     Problem:
       type: object
       additionalProperties: false
