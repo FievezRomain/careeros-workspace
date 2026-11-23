@@ -90,7 +90,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/ProfileItemReplacementInput' }
+            schema: { $ref: '#/components/schemas/ProfileItemInput' }
       responses:
         '200':
           description: Profile item replaced.
@@ -289,17 +289,6 @@ components:
           experience: '#/components/schemas/Experience'
           education: '#/components/schemas/Education'
           skill: '#/components/schemas/Skill'
-    ProfileItemReplacementInput:
-      oneOf:
-        - $ref: '#/components/schemas/ExperienceReplacementInput'
-        - $ref: '#/components/schemas/EducationReplacementInput'
-        - $ref: '#/components/schemas/SkillReplacementInput'
-      discriminator:
-        propertyName: kind
-        mapping:
-          experience: '#/components/schemas/ExperienceReplacementInput'
-          education: '#/components/schemas/EducationReplacementInput'
-          skill: '#/components/schemas/SkillReplacementInput'
     ProfileItemPage:
       type: object
       additionalProperties: false
@@ -350,6 +339,13 @@ components:
       properties:
         provenance: { $ref: '#/components/schemas/FactProvenance' }
         validationStatus: { $ref: '#/components/schemas/FactValidationStatus' }
+    DatedItem:
+      type: object
+      required: [startDate, current]
+      properties:
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        current: { type: boolean }
     DatedItemFields:
       type: object
       required: [startDate, current]
@@ -396,20 +392,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/SkillFields'
         - $ref: '#/components/schemas/ProfileFactInputMetadata'
-      unevaluatedProperties: false
-    ExperienceReplacementInput:
-      allOf:
-        - $ref: '#/components/schemas/DatedItemFields'
-        - $ref: '#/components/schemas/ExperienceFields'
-      unevaluatedProperties: false
-    EducationReplacementInput:
-      allOf:
-        - $ref: '#/components/schemas/DatedItemFields'
-        - $ref: '#/components/schemas/EducationFields'
-      unevaluatedProperties: false
-    SkillReplacementInput:
-      allOf:
-        - $ref: '#/components/schemas/SkillFields'
       unevaluatedProperties: false
     ItemIdentity:
       type: object
