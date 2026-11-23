@@ -35,6 +35,8 @@ Do not block a PR for a personal style preference already handled by formatters 
 
 - Apply SOLID as diagnostic questions, not as a demand for one interface or class per concept.
 - Structure backend services with hexagonal boundaries: domain and use cases remain inside; transport, persistence, messaging and provider SDKs remain adapters outside.
+- Require use cases to express infrastructure needs through core-owned ports and receive implementations by explicit constructor injection. Concrete adapters and technical clients are created only in the composition root.
+- Treat schema migrations and their runner as part of the persistence adapter. A persistent service must apply and verify every expected migration head before startup completes.
 - Keep responsibilities cohesive and dependencies directed toward stable domain boundaries.
 - Prefer composition and explicit dependency injection over inheritance, service locators, mutable globals or hidden singletons.
 - Introduce Adapter, Strategy, Repository, Unit of Work or similar patterns only when they isolate a real boundary or change axis. Flag pattern theatre and speculative generalization.

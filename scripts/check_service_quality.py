@@ -86,6 +86,21 @@ def check_service(root: Path) -> list[str]:
         errors.append("tool.careeros.quality.persistence must be true or false")
     elif persistence:
         required_commands.extend(("migrate_up", "migrate_down"))
+        adapters_path = paths.get("adapters")
+        migration_value = quality.get("migrations")
+        migrations = root / migration_value if isinstance(migration_value, str) else None
+        runner_value = quality.get("migration_runner")
+        migration_runner = root / runner_value if isinstance(runner_value, str) else None
+        if migrations is None or not migrations.is_dir():
+            errors.append("tool.careeros.quality.migrations must name an adapter-owned directory")
+        elif adapters_path and not migrations.resolve().is_relative_to(adapters_path.resolve()):
+            errors.append("tool.careeros.quality.migrations must be inside the adapters directory")
+        if migration_runner is None or not migration_runner.is_file():
+            errors.append("tool.careeros.quality.migration_runner must name an existing runner")
+        elif migrations and not migration_runner.resolve().is_relative_to(migrations.resolve()):
+            errors.append("tool.careeros.quality.migration_runner must be inside migrations")
+        if (root / "migrations").exists() or (root / "alembic.ini").exists():
+            errors.append("persistence migrations must be adapter-owned, not repository-root files")
     for key in required_commands:
         if not isinstance(commands.get(key), str) or not commands[key].strip():
             errors.append(f"tool.careeros.quality.commands.{key} is required")
@@ -112,6 +127,12 @@ def check_service(root: Path) -> list[str]:
         path = root / migration_evidence if isinstance(migration_evidence, str) else None
         if path is None or not path.exists():
             errors.append("tool.careeros.quality.evidence.migrations must prove apply and rollback")
+        startup_evidence = evidence.get("startup_migrations")
+        path = root / startup_evidence if isinstance(startup_evidence, str) else None
+        if path is None or not path.exists():
+            errors.append(
+                "tool.careeros.quality.evidence.startup_migrations must prove startup enforcement"
+            )
 
     if package and package.is_dir():
         python_files = list(package.rglob("*.py"))

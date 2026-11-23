@@ -26,6 +26,8 @@ application = "src/example/application"
 ports = "src/example/ports"
 adapters = "src/example/adapters"
 composition_root = "src/example/bootstrap.py"
+migrations = "src/example/adapters/migrations"
+migration_runner = "src/example/adapters/migrations/runner.py"
 
 [tool.careeros.quality.commands]
 format = "ruff format --check ."
@@ -50,6 +52,7 @@ health = "tests/integration/test_health.py"
 logging = "tests/unit/test_logging.py"
 security = "tests/integration/test_authorization.py"
 migrations = "tests/integration/test_migrations.py"
+startup_migrations = "tests/integration/test_startup_migrations.py"
 """
 
 
@@ -62,7 +65,7 @@ class ServiceQualityTest(unittest.TestCase):
         (self.root / ".python-version").write_text("3.14\n", encoding="utf-8")
         for directory in (
             "src/example/domain", "src/example/application", "src/example/ports",
-            "src/example/adapters", "tests/unit", "tests/integration", "tests/contract",
+            "src/example/adapters/migrations", "tests/unit", "tests/integration", "tests/contract",
         ):
             (self.root / directory).mkdir(parents=True)
         files = {
@@ -71,10 +74,12 @@ class ServiceQualityTest(unittest.TestCase):
             "src/example/application/use_case.py": "from example.domain import model\n",
             "src/example/ports/commands.py": "from pydantic import BaseModel\nclass Command(BaseModel): pass\n",
             "src/example/adapters/api.py": "from pydantic import BaseModel\nclass Input(BaseModel): pass\n",
+            "src/example/adapters/migrations/runner.py": "class MigrationRunner: pass\n",
             "tests/integration/test_health.py": "# readiness test\n",
             "tests/unit/test_logging.py": "# redaction and correlation test\n",
             "tests/integration/test_authorization.py": "# authorization test\n",
             "tests/integration/test_migrations.py": "# apply and rollback test\n",
+            "tests/integration/test_startup_migrations.py": "# startup enforcement test\n",
         }
         for name, content in files.items():
             (self.root / name).write_text(content, encoding="utf-8")
@@ -119,6 +124,25 @@ class ServiceQualityTest(unittest.TestCase):
         self.assertTrue(any("evidence.health" in error for error in errors))
         self.assertTrue(any("evidence.logging" in error for error in errors))
         self.assertTrue(any("evidence.contract" in error for error in errors))
+
+    def test_requires_adapter_owned_migrations_and_startup_runner_evidence(self) -> None:
+        pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
+        pyproject = pyproject.replace(
+            'migrations = "src/example/adapters/migrations"', 'migrations = "migrations"'
+        ).replace(
+            'migration_runner = "src/example/adapters/migrations/runner.py"',
+            'migration_runner = "migrations/runner.py"',
+        )
+        (self.root / "pyproject.toml").write_text(pyproject, encoding="utf-8")
+        (self.root / "migrations").mkdir()
+        (self.root / "migrations/runner.py").touch()
+        (self.root / "tests/integration/test_startup_migrations.py").unlink()
+
+        errors = check_service(self.root)
+
+        self.assertTrue(any("inside the adapters" in error for error in errors))
+        self.assertTrue(any("not repository-root" in error for error in errors))
+        self.assertTrue(any("startup_migrations" in error for error in errors))
 
     def test_rejects_unsafe_logging_and_security_configuration(self) -> None:
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
