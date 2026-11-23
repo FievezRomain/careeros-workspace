@@ -254,6 +254,10 @@ components:
         - $ref: '#/components/schemas/SkillInput'
         - $ref: '#/components/schemas/ItemIdentity'
         - type: object
+          additionalProperties: false
+          properties:
+            levelSource: { type: string, const: selfDeclared }
+        - type: object
           properties:
             levelSource: { type: string, const: selfDeclared }
     Problem:
