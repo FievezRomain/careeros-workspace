@@ -34,8 +34,6 @@ paths:
       tags: [Profile items]
       operationId: createProfileItem
       summary: Create an owned profile item
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -50,9 +48,7 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/ProfileItem' }
-        '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
-        '409': { $ref: '#/components/responses/Conflict' }
         '422': { $ref: '#/components/responses/ValidationFailed' }
   /v1/profile/items/{itemId}:
     parameters:
@@ -126,14 +122,6 @@ components:
       name: cursor
       in: query
       schema: { type: string, minLength: 1, maxLength: 512 }
-    IdempotencyKey:
-      name: Idempotency-Key
-      in: header
-      required: true
-      description: Retained for at least 24 hours and scoped to the authenticated actor and operation.
-      schema:
-        type: string
-        pattern: '^[A-Za-z0-9._:-]{16,128}$'
   headers:
     CorrelationId:
       description: Request correlation identifier.
@@ -157,11 +145,6 @@ components:
           schema: { $ref: '#/components/schemas/Problem' }
     NotFound:
       description: Item absent or not owned by the authenticated account.
-      content:
-        application/problem+json:
-          schema: { $ref: '#/components/schemas/Problem' }
-    Conflict:
-      description: Idempotency key reused with a different request.
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
