@@ -29,6 +29,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/ProfileItemPage' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '422': { $ref: '#/components/responses/ValidationFailed' }
     post:
       tags: [Profile items]
@@ -49,6 +50,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/ProfileItem' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '422': { $ref: '#/components/responses/ValidationFailed' }
   /v1/profile/items/{itemId}:
     parameters:
@@ -66,6 +68,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/ProfileItem' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
     put:
       tags: [Profile items]
@@ -85,6 +88,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/ProfileItem' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/ValidationFailed' }
     delete:
@@ -97,6 +101,7 @@ paths:
           headers:
             X-Correlation-ID: { $ref: '#/components/headers/CorrelationId' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
 components:
   securitySchemes:
@@ -130,16 +135,16 @@ components:
       description: Relative location of the created item.
       schema: { type: string }
   responses:
-    BadRequest:
-      description: Malformed request or idempotency key.
-      content:
-        application/problem+json:
-          schema: { $ref: '#/components/schemas/Problem' }
     Unauthenticated:
       description: Missing, invalid or expired credentials.
       headers:
         WWW-Authenticate:
           schema: { type: string }
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: Authenticated account lacks the required profile scope.
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
@@ -262,7 +267,7 @@ components:
         detail: { type: string }
         instance: { type: string, format: uri }
         code: { type: string, pattern: '^[A-Z][A-Z0-9_]*$' }
-        correlationId: { type: string, format: uuid }
+        correlationId: { type: string, minLength: 1, maxLength: 128 }
         errors:
           type: array
           items:
