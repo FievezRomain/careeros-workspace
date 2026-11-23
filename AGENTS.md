@@ -20,6 +20,8 @@ Start with `README.md`, `docs/architecture/system-overview.md`, the target servi
 
 - Never commit secrets, real CVs, real applications or personal data.
 - Services do not share databases. Integration happens through versioned APIs and events.
+- Domain and application code depend only on core types and ports. Use cases receive ports through explicit constructor injection; concrete adapters are created only in a composition root.
+- Persistence migrations belong inside the owning persistence/migration adapter, never at repository root. A startup use case must invoke an injected migration runner and refuse readiness until every expected migration head is applied.
 - Authorization and ownership checks happen at every service boundary.
 - AI output is untrusted until validated against verified profile facts and deterministic rules.
 - ATS scores are internal diagnostics, not guarantees about third-party screening systems.
@@ -35,6 +37,8 @@ Start with `README.md`, `docs/architecture/system-overview.md`, the target servi
 ### Service boundaries
 
 - Flag domain or application code that imports frameworks, persistence, transport, identity-provider or queue adapters. The safe path is an inward dependency through a port, with wiring confined to the composition root.
+- Flag use cases that construct adapters, engines, clients or repositories, or obtain them from mutable globals/service locators. Dependencies must be expressed as narrow core-owned ports and constructor-injected.
+- Flag root-level migration trees, migrations coupled to a use case, or applications that can serve traffic before an adapter-owned migration runner verifies all schema heads.
 
 ### Trusted data
 

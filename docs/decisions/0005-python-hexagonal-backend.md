@@ -35,7 +35,9 @@ Backend services use hexagonal architecture:
 - the core defines narrow inbound and outbound ports around its needs;
 - HTTP, persistence, messaging, identity and provider integrations are adapters;
 - framework and vendor types are mapped at the edge and do not leak inward;
-- dependency wiring stays in the composition root.
+- use cases receive port implementations through explicit constructor injection;
+- dependency wiring and concrete adapter construction stay in the composition root;
+- schema migrations and their runner belong to the owning persistence adapter, and startup applies and verifies every migration head before accepting traffic.
 
 SOLID principles and design patterns guide boundaries but do not justify speculative interfaces or abstractions. Composition is preferred to inheritance.
 
