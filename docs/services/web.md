@@ -44,3 +44,15 @@ placeholders until their owning V1 stories are delivered.
   The profile service remains authoritative for scopes, ownership and domain validation.
 - Loading, empty, success, validation, service-error and authorization-denial states are explicit.
   Authorization denial renders no profile facts or provider payload details.
+
+## V1 automatic-search controls
+
+- The protected profile view lets an authenticated person activate, update, pause and resume their
+  automatic opportunity search through the versioned profile API.
+- The UI displays active or paused state, immutable criteria version, timezone and daily window.
+  Before activation it shows the explicit `Europe/Paris`, `08:00`–`10:00` default.
+- Every mutation sends a fresh idempotency key, and successful responses are validated at the HTTP
+  adapter boundary before they reach presentation components.
+- The view explains that role, skill, experience, location, work-preference and criteria changes
+  request rematching, while contact-only and presentation-only changes do not. The profile service
+  remains authoritative for ownership, validation and that classification.

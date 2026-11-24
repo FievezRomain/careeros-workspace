@@ -31,3 +31,18 @@ The additive OpenAPI 1.1 contract is published before the profile-service produc
 Resume and matching consumers may adopt snapshot identifiers only after the producer is deployed;
 they must continue to accept the existing live-profile contract during that rollout. No consumer
 may read the profile database or reconstruct provenance outside this service.
+
+## V1 automatic-search boundary
+
+- The service owns an authenticated person's automatic-search criteria, state and immutable
+  versions. Criteria include target roles, locations, remote policy, contract types, exclusions,
+  recommendation threshold, IANA timezone and daily execution window.
+- Activation, updates, pause and resume are idempotent owner-scoped operations. The explicit
+  default schedule is `Europe/Paris`, `08:00`–`10:00`; downstream automation must consume the
+  stored schedule rather than infer another default.
+- A provider-neutral retrieval signature contains only normalized roles, locations, remote policy,
+  contract types and exclusions. It excludes thresholds, contact data and raw profile facts, and
+  may be shared only when its normalized dimensions are exactly equivalent.
+- Criteria, role, skill, experience, location and work-preference changes request rematching.
+  Contact-only and presentation-only changes do not. The profile mutation and its versioned
+  match-relevant outbox event are committed atomically with correlation metadata.
