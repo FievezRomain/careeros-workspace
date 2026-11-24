@@ -12,6 +12,11 @@ Repository: https://github.com/FievezRomain/careeros-job-service
 - PostgreSQL 16 is service-owned. No other service may read its database, role, schema or migration ledger.
 - Migration scripts and runner live under `adapters/postgresql/migrations`. Startup applies pending revisions, verifies every expected head and fails before serving traffic on mismatch.
 - The scaffold exposes liveness and readiness only. Manual capture, provenance, normalization and query behavior remain scoped to V1-018 and V1-019.
+- `POST /v1/jobs/manual` implements `BR-JOB-001` and `BR-JOB-002`. It requires an authenticated account, the `jobs:write` scope and an idempotency key.
+- Ownership and tenant identifiers come only from the verified identity context. The request cannot select them.
+- Manual capture preserves the submitted title, employer, description, source reference and exact raw source wording, with a server-recorded capture time.
+- Replaying the same command returns the original opportunity; reusing its key for different content is rejected.
+- Normalization, deduplication across discoveries and query APIs remain scoped to V1-019.
 
 ## Shared rules
 
