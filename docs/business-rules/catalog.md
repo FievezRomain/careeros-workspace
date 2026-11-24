@@ -23,6 +23,9 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | BR-PRO-005 | A skill may include a self-declared level and supporting experiences, but CareerOS must not present a self-declaration as an independent certification. |
 | BR-PRO-006 | Removing or correcting a profile fact does not silently rewrite resumes or applications that were already approved; those artifacts retain the snapshot used to create them. |
 | BR-PRO-007 | Before generating an application artifact, CareerOS identifies missing facts required for that artifact and asks for confirmation instead of inventing them. |
+| BR-PRO-008 | A person can activate, pause and resume an owned automatic opportunity search with explicit criteria, timezone and daily search window; every material criteria change creates an immutable version. |
+| BR-PRO-009 | Role, skill, experience, location, work-preference and search-criteria changes request rematching, while contact-only and presentation-only changes do not. |
+| BR-PRO-010 | Opportunity retrieval receives only a minimum provider-neutral search signature and may be shared only for exactly equivalent normalized search dimensions; individual criteria are never averaged or weakened. |
 
 ## Job opportunities
 
