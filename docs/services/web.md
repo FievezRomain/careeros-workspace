@@ -30,5 +30,17 @@ Repository: https://github.com/FievezRomain/careeros-web
 ## Current navigation
 
 The authenticated shell exposes Overview, Profile, Jobs, Resumes and Applications navigation.
-Feature content remains placeholder-only until its owning V1 story is delivered; this increment
-does not add profile, job or application business behavior.
+Profile onboarding is delivered below; Jobs, Resumes and Applications remain protected
+placeholders until their owning V1 stories are delivered.
+
+## V1 profile onboarding
+
+- `/app/profile` loads and edits owned experiences, education items and self-declared skills through
+  the versioned profile API.
+- Presentation code depends on a local `ProfilePort`. The HTTP adapter receives the access-token
+  capability through dependency injection and validates successful API responses before rendering;
+  raw tokens never enter components.
+- The editor validates required values, chronological dates and current-item state before transport.
+  The profile service remains authoritative for scopes, ownership and domain validation.
+- Loading, empty, success, validation, service-error and authorization-denial states are explicit.
+  Authorization denial renders no profile facts or provider payload details.
