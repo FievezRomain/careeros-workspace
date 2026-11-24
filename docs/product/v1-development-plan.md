@@ -2,9 +2,9 @@
 
 ## V1 outcome
 
-A user can authenticate, build a verified professional profile, record a job opportunity, obtain an explainable match, generate a grounded resume, validate the final document with ATS rules, approve an application package, track its state, prepare an approved follow-up and view a privacy-conscious conversion funnel.
+A user can authenticate, build a verified professional profile, activate a daily opportunity search, receive individually matched recommendations, generate a grounded resume for a selected opportunity, validate the final document with ATS rules, approve an application package, track its state, prepare an approved follow-up and view a privacy-conscious conversion funnel.
 
-V1 does not attempt generic browser automation against arbitrary job boards. External messages or submissions are executed only through an explicitly supported adapter and after action-time user approval.
+V1 does not attempt generic browser automation, authenticated scraping or protection bypass against arbitrary job boards. Discovery uses supported APIs and feeds, public company or ATS pages, public datasets and a provider-neutral open-web search adapter. External messages or submissions are executed only through an explicitly supported adapter and after action-time user approval.
 
 ## V1 scope
 
@@ -13,8 +13,10 @@ V1 includes one reviewable end-to-end journey that lets a user:
 - authenticate and access only resources they own;
 - maintain a professional profile whose facts carry validation status and provenance;
 - capture and normalize a job opportunity with its source provenance;
-- receive an explainable match based on versioned profile and job snapshots;
-- generate one ATS-safe PDF template and a DOCX export using verified facts only;
+- configure, pause and resume daily discovery criteria for an active job search;
+- discover opportunities incrementally from structured sources and the open web without discarding unresolved LinkedIn, Indeed or similar source links;
+- receive an explainable, per-profile recommendation based on immutable profile, criteria and opportunity versions without duplicate processing or notification;
+- generate one ATS-safe PDF template and a DOCX export for a selected recommendation using verified facts only;
 - obtain a versioned ATS report with deterministic findings, evidence and honest limitations;
 - create, approve and track an application package without autonomous submission;
 - prepare and explicitly approve a follow-up before delivery through one supported adapter;
@@ -25,11 +27,11 @@ V1 includes one reviewable end-to-end journey that lets a user:
 
 V1 explicitly excludes:
 
-- generic browser automation or support for arbitrary job boards;
+- generic browser automation, authenticated scraping, CAPTCHA bypass or unsupported extraction from arbitrary job boards;
 - autonomous, bulk or approval-free applications, messages and calendar changes;
 - facts invented by a model, unvalidated model output or claims that an ATS score predicts a third-party screening decision;
 - email delivery and WhatsApp integration;
-- multiple resume templates, broad provider coverage or a marketplace of delivery adapters;
+- multiple resume templates, exhaustive provider coverage or a marketplace of delivery adapters;
 - cross-service database access, shared service schemas or unversioned public integration contracts;
 - multi-region operation, internet-scale capacity and production availability guarantees.
 
@@ -40,6 +42,8 @@ V1 explicitly excludes:
 - **Privacy:** logs redact sensitive payloads, analytics minimize stored data, and repositories and tests contain only synthetic fixtures.
 - **Grounding and explainability:** generated content is traceable to verified profile facts, rankings expose evidence and uncertainty, and ATS findings state their limits.
 - **Reliability:** external side effects are idempotent, retry-safe and auditable; deterministic rules remain the authority for validation and state transitions.
+- **Discovery completeness:** structured sources are paginated to exhaustion within their documented limits, every new or materially changed candidate is normalized, and compatible searches may share retrieval without averaging or weakening individual criteria.
+- **Cost control:** requirement extraction runs once per immutable opportunity version and deterministic matching evaluates profile/opportunity pairs without an LLM call for every pair.
 - **Interoperability:** public APIs, events and schemas are versioned, and services integrate only through those contracts.
 - **Testability:** the complete journey is reproducible through black-box acceptance tests without direct database access or live provider side effects.
 - **Operability:** services expose health and readiness signals, propagate correlation identifiers without sensitive content, and the release includes a tested backup and restore procedure.
@@ -56,6 +60,8 @@ V1 is ready to release only when all of the following are true:
 6. The V1 security review finds no unresolved release-blocking authorization, tenancy, privacy, secret-handling or audit issue.
 7. The documented backup and restore smoke test succeeds for the V1 system-of-record data and artifact metadata.
 8. Known limitations are published, all V1 pull requests respect the delivery budget or document an approved split, and the release checklist is complete.
+9. A scheduled run discovers all available pages from the configured structured sources, retains unresolved external links with an explicit verification state, and does not rematch an unchanged opportunity against an unchanged profile and criteria snapshot.
+10. A newly qualifying recommendation appears in the owning user's listing and produces at most one notification intent per recommendation category and channel.
 
 ## V1 architecture decisions
 
@@ -145,7 +151,7 @@ V1-007 separates deterministic enforcement from judgment-based review. CI enforc
 | V1-015 | `careeros-web` | `story/v1-015-web-shell-auth` | Application shell, authenticated session and protected navigation. |
 | V1-016 | `careeros-web` | `story/v1-016-profile-onboarding` | Profile onboarding/editor with loading, validation and error states. |
 
-## Epic 2 — Jobs, AI gateway and matching
+## Epic 2 — Jobs, discovery, AI gateway and matching
 
 ### Feature 2.1 — Job catalog
 
@@ -155,7 +161,15 @@ V1-007 separates deterministic enforcement from judgment-based review. CI enforc
 | V1-018 | `careeros-job-service` | `story/v1-018-manual-job-import` | Manual job capture with raw source and provenance. |
 | V1-019 | `careeros-job-service` | `story/v1-019-job-normalization` | Deterministic normalization, deduplication and query API. |
 
-### Feature 2.2 — Provider-neutral AI access
+### Feature 2.2 — Automated opportunity discovery
+
+| Key | Repository | Branch | Deliverable |
+| --- | --- | --- | --- |
+| V1-055 | `careeros-profile-service`, `careeros-web` | `story/v1-055-search-criteria` | Versioned active-search criteria, eligibility, schedule window and pause/resume controls. |
+| V1-056 | `careeros-job-service`, `careeros-automation` | `story/v1-056-daily-discovery` | Daily incremental multi-source discovery through supported APIs, feeds, public datasets and company or ATS pages. |
+| V1-057 | `careeros-ai-gateway`, `careeros-job-service` | `story/v1-057-open-web-discovery` | Provider-neutral AI-assisted query expansion, raw web-result retrieval, canonical resolution and retained link-only opportunities. |
+
+### Feature 2.3 — Provider-neutral AI access
 
 | Key | Repository | Branch | Deliverable |
 | --- | --- | --- | --- |
@@ -163,14 +177,15 @@ V1-007 separates deterministic enforcement from judgment-based review. CI enforc
 | V1-021 | `careeros-ai-gateway` | `story/v1-021-provider-adapter` | First provider adapter with schema validation and redaction. |
 | V1-022 | `careeros-ai-gateway` | `story/v1-022-ai-policy-observability` | Timeouts, fallback policy, quotas and non-sensitive observability. |
 
-### Feature 2.3 — Explainable matching
+### Feature 2.4 — Explainable matching and recommendations
 
 | Key | Repository | Branch | Deliverable |
 | --- | --- | --- | --- |
 | V1-023 | `careeros-matching-service` | `story/v1-023-matching-scaffold` | Service scaffold and deterministic baseline scoring. |
 | V1-024 | `careeros-matching-service` | `story/v1-024-requirement-extraction` | Versioned requirement extraction through the AI gateway. |
 | V1-025 | `careeros-matching-service` | `story/v1-025-match-explanation` | Evidence-based score explanation and uncertainty. |
-| V1-026 | `careeros-web` | `story/v1-026-job-match-ui` | Job catalog, job detail and match explanation UI. |
+| V1-026 | `careeros-web` | `story/v1-026-job-match-ui` | Personalized opportunity listing, verified/external-to-verify states, job detail and match explanation UI. |
+| V1-058 | `careeros-matching-service` | `story/v1-058-recommendation-pipeline` | Idempotent per-profile recommendation pipeline, snapshot-aware rematching and `recommendation.created.v1`. |
 
 ## Epic 3 — Resume generation and ATS validation
 
@@ -181,6 +196,7 @@ V1-007 separates deterministic enforcement from judgment-based review. CI enforc
 | V1-027 | `careeros-resume-service` | `story/v1-027-resume-scaffold` | Service scaffold, document versioning and artifact metadata. |
 | V1-028 | `careeros-resume-service` | `story/v1-028-grounded-resume` | Generate content exclusively from verified profile facts. |
 | V1-029 | `careeros-resume-service` | `story/v1-029-document-rendering` | Render and store one ATS-safe PDF template and DOCX export. |
+| V1-059 | `careeros-resume-service`, `careeros-web` | `story/v1-059-recommendation-resume` | One-click grounded resume draft from a recommendation, pinned to its profile and opportunity snapshots. |
 
 ### Feature 3.2 — ATS report
 
@@ -209,9 +225,9 @@ V1-007 separates deterministic enforcement from judgment-based review. CI enforc
 | V1-038 | `careeros-communication-service` | `story/v1-038-approved-delivery` | One delivery adapter gated by approval and idempotency. |
 | V1-039 | `careeros-automation` | `story/v1-039-followup-workflow` | Credential-free n8n follow-up workflow with approval gate and retries. |
 | V1-040 | `careeros-web` | `story/v1-040-application-pipeline-ui` | Application pipeline, approval and status UI. |
-| V1-051 | `careeros-communication-service` | `story/v1-051-notification-preferences` | Notification preferences, consent, quiet hours, deduplication and digest policy. |
-| V1-052 | `careeros-communication-service` | `story/v1-052-notification-channel` | In-app notification history, Telegram account linking and provider-neutral delivery-request contract. |
-| V1-053 | `careeros-automation` | `story/v1-053-telegram-notification-workflow` | Credential-free n8n workflow using the Telegram node, with idempotency, retry and delivery-result reporting. |
+| V1-051 | `careeros-communication-service` | `story/v1-051-notification-preferences` | Notification preferences, consent, quiet hours, deduplication and digest policy, including newly relevant opportunities. |
+| V1-052 | `careeros-communication-service` | `story/v1-052-notification-channel` | In-app notification history, Telegram account linking and provider-neutral delivery request consuming `recommendation.created.v1`. |
+| V1-053 | `careeros-automation` | `story/v1-053-telegram-notification-workflow` | Credential-free n8n Telegram workflow with idempotency, retry and delivery-result reporting for opted-in recommendation notifications. |
 
 ## Epic 5 — Analytics, hardening and release
 
@@ -232,15 +248,29 @@ V1-007 separates deterministic enforcement from judgment-based review. CI enforc
 | V1-046 | `careeros-infrastructure` | `story/v1-046-backup-restore` | Backup/restore procedure and operational smoke test. |
 | V1-047 | `careeros-workspace` | `story/v1-047-v1-release` | Release checklist, changelog, version tags and known limitations. |
 
+## Delivery lots
+
+Lots are sequencing groups, not shared implementation branches. Each US still uses its own branch and one PR per affected repository.
+
+| Lot | Outcome | Stories | Dependencies |
+| --- | --- | --- | --- |
+| Lot 2A — Search activation and deterministic discovery | A user can activate daily search and structured sources are ingested incrementally and exhaustively. | V1-055, V1-056 | V1-014, V1-016, V1-019 |
+| Lot 2B — AI and open-web discovery | Long-tail opportunities are found through provider-neutral web search, resolved to canonical sources when possible and otherwise retained as external links to verify. | V1-020, V1-021, V1-022, V1-057 | Lot 2A |
+| Lot 2C — Individual recommendations and listing | Every profile is evaluated against its own immutable criteria and receives an explainable, deduplicated listing. | V1-023, V1-024, V1-025, V1-026, V1-058 | Lots 2A and 2B |
+| Lot 3A — Recommendation-to-resume | A user creates a grounded, versioned resume draft directly from a verified recommendation. | V1-027, V1-028, V1-029, V1-059 | Lot 2C |
+| Lot 4B — Relevant-opportunity notifications | A newly qualifying recommendation creates an in-app notification and, when opted in, one Telegram delivery. | V1-051, V1-052, V1-053 | V1-058 |
+
 ## Recommended execution order
 
 1. Complete Epic 0, including the first business-rule catalog and conformance harness, before service implementation.
 2. Deliver Epic 1 as the first vertical slice.
-3. Deliver job capture and deterministic matching before adding model-powered enrichment.
-4. Complete resume generation before ATS validation.
-5. Complete application tracking before real communication delivery.
-6. Add analytics only after the source lifecycle events are stable.
-7. Run hardening and the end-to-end journey before tagging V1.
+3. Complete V1-019, then deliver Lot 2A so daily structured discovery has a normalized, deduplicated destination.
+4. Deliver Lot 2B and its provider-neutral AI controls before enabling open-web discovery in scheduled runs.
+5. Deliver Lot 2C; retrieval may be shared only for exactly compatible search signatures, while matching and recommendation decisions remain individual.
+6. Deliver Lot 3A before ATS validation, then connect Lot 4B to `recommendation.created.v1` without duplicate notifications.
+7. Complete application tracking before real communication delivery.
+8. Add analytics only after the source lifecycle events are stable.
+9. Run hardening and the end-to-end journey before tagging V1.
 
 ## Pull request checklist
 
