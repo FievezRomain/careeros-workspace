@@ -40,6 +40,9 @@ Repository: https://github.com/FievezRomain/careeros-job-service
   content creates a new immutable opportunity version and a transactional
   `job.opportunity-version-discovered.v1` outbox event. Failed run claims remain
   retryable and completed commands replay safely.
+- [V1-057](../decisions/0006-open-web-discovery.md) adds optional web retrieval via
+  the AI gateway. The catalog preserves links awaiting verification and carries
+  explicit evidence and resume eligibility on each immutable version.
 
 ## Shared rules
 

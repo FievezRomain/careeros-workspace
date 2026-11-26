@@ -32,11 +32,11 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | ID | Business rule |
 | --- | --- |
 | BR-JOB-001 | A person can record an opportunity manually from a title, employer, description and source reference. |
-| BR-JOB-002 | A detected opportunity records where and when it was found and preserves the source wording needed to understand the result. |
-| BR-JOB-003 | Repeated discoveries of the same role from the same employer are grouped when they represent the same opportunity; the person can separate them if the grouping is wrong. |
-| BR-JOB-004 | A materially changed source creates a new opportunity version and does not silently overwrite the version used by an existing application. |
+| BR-JOB-002 | A detected opportunity records where and when it was found and preserves the source wording needed to understand the result. If only an external link can be verified, the opportunity retains that link and its available evidence. |
+| BR-JOB-003 | Repeated discoveries of the same role from the same employer are grouped when they represent the same opportunity. Distinct opportunities with the same title remain separate. The person can separate them if the grouping is wrong. |
+| BR-JOB-004 | Materially changed source content or newly verified full text creates a new opportunity version and preserves prior versions, including the version used by an existing application. |
 | BR-JOB-005 | An opportunity can be marked saved, ignored, expired or converted into an application. Ignored and expired opportunities are excluded from active recommendations. |
-| BR-JOB-006 | CareerOS must distinguish information stated by the source from information inferred or left unknown. |
+| BR-JOB-006 | CareerOS distinguishes information stated by the source from information inferred or left unknown. A link awaiting verification identifies its unknown fields and is ineligible for full resume generation until the full offer is verified or explicitly imported. |
 | BR-JOB-007 | A newly detected opportunity is notified only when it is not a duplicate, is still actionable and meets the person's saved criteria or notification threshold. |
 
 ## Matching and recommendations
@@ -127,7 +127,7 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | ID | Business rule |
 | --- | --- |
 | BR-AI-001 | Generated suggestions are visibly identified as suggestions until accepted by the person. |
-| BR-AI-002 | A generated result that lacks required evidence is rejected or marked inconclusive rather than treated as a fact. |
+| BR-AI-002 | CareerOS rejects a generated result that lacks required evidence or marks it inconclusive. In AI-assisted web discovery, only validated raw source results can become discovery evidence. |
 | BR-AI-003 | Changing the generation provider must not change the business meaning of approvals, ownership, evidence or application states. |
 | BR-AI-004 | The person can reject a suggestion without changing the confirmed facts that produced it. |
 | BR-AI-005 | CareerOS does not make irreversible career decisions, submit applications or contact third parties solely from a generated recommendation. |
