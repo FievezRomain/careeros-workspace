@@ -37,20 +37,21 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | BR-JOB-004 | Materially changed source content or newly verified full text creates a new opportunity version and preserves prior versions, including the version used by an existing application. |
 | BR-JOB-005 | An opportunity can be marked saved, ignored, expired or converted into an application. Ignored and expired opportunities are excluded from active recommendations. |
 | BR-JOB-006 | CareerOS distinguishes information stated by the source from information inferred or left unknown. A link awaiting verification identifies its unknown fields and is ineligible for full resume generation until the full offer is verified or explicitly imported. |
-| BR-JOB-007 | A newly detected opportunity is notified only when it is not a duplicate, is still actionable and meets the person's saved criteria or notification threshold. |
+| BR-JOB-007 | A newly qualifying opportunity creates one recommendation intent when it is actionable and meets the person's saved criteria and threshold. Retrying the same evaluation or updating an active recommendation does not repeat that intent. |
 
 ## Matching and recommendations
 
 | ID | Business rule |
 | --- | --- |
-| BR-MAT-001 | A match compares one version of an opportunity with one confirmed profile snapshot. The same pair and scorer version produce the same result. |
+| BR-MAT-001 | A match compares one immutable opportunity version with one confirmed profile snapshot. Recommendation evaluation also pins the criteria version. Replaying those inputs with the same matcher version reuses the evaluation. |
 | BR-MAT-002 | A match result identifies satisfied, partially satisfied, missing and unknown requirements. |
 | BR-MAT-003 | Every positive or negative finding is supported by an opportunity statement and, when applicable, a confirmed profile fact. The explanation shows what was required and what the fact established. An extracted requirement is a suggestion grounded in a verbatim excerpt from the evaluated opportunity version. |
 | BR-MAT-004 | Unknown information is neither satisfied nor missing. It does not contribute to the score, which is unavailable if no requirement can be assessed. The explanation shows assessed coverage and how resolving unknown requirements could affect the score when verified requirements exist. |
 | BR-MAT-005 | Mandatory requirements weigh more than optional preferences. The explanation shows each requirement's weight and contribution. A confirmed hard eligibility conflict is shown separately from the overall score. |
 | BR-MAT-006 | A score is an aid to prioritization, not a promise of interview or employment. The interface must state this limitation. |
 | BR-MAT-007 | The person can correct an incorrectly extracted requirement; a correction produces a new result without rewriting the earlier result. |
-| BR-MAT-008 | Recommendations are ordered using the person's current criteria, but the person can inspect why each opportunity was included or excluded. |
+| BR-MAT-008 | The person's current criteria determine eligibility and ordering. A relevant profile, criteria or opportunity change reevaluates affected recommendations. Contact-only changes do not. The person can inspect the evidence and reason for inclusion or exclusion. |
+| BR-MAT-009 | A full-text opportunity version's completed requirement extraction is reused across profile evaluations that share that version. A link awaiting verification is not submitted for extraction. |
 
 ## Resume and application documents
 
