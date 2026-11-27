@@ -22,6 +22,13 @@ The service checks each source excerpt, records extraction provenance and keeps
 suggestions separate from confirmed scoring inputs. Link-only opportunities are
 unassessed. See the service OpenAPI and BR-MAT-003 and BR-AI-002.
 
+## V1-025 score explanation
+
+The scoring response shows each requirement's contribution and the confirmed level
+behind it. The versioned explanation exposes evidence coverage and hypothetical
+score bounds over the same requirements. Link-only opportunities carry an explicit
+reason for lacking a score or bounds. See BR-MAT-003 through BR-MAT-006.
+
 ## Shared rules
 
 - Version all public contracts.

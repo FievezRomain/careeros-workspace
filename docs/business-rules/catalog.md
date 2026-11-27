@@ -45,9 +45,9 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | --- | --- |
 | BR-MAT-001 | A match compares one version of an opportunity with one confirmed profile snapshot. The same pair and scorer version produce the same result. |
 | BR-MAT-002 | A match result identifies satisfied, partially satisfied, missing and unknown requirements. |
-| BR-MAT-003 | Every positive or negative finding is supported by an opportunity statement and, when applicable, a confirmed profile fact. An extracted requirement is a suggestion grounded in a verbatim excerpt from the evaluated opportunity version. |
-| BR-MAT-004 | Unknown information is neither satisfied nor missing. It does not contribute to the score, which is unavailable if no requirement can be assessed. |
-| BR-MAT-005 | Mandatory requirements weigh more than optional preferences. A confirmed hard eligibility conflict is shown separately from the overall score. |
+| BR-MAT-003 | Every positive or negative finding is supported by an opportunity statement and, when applicable, a confirmed profile fact. The explanation shows what was required and what the fact established. An extracted requirement is a suggestion grounded in a verbatim excerpt from the evaluated opportunity version. |
+| BR-MAT-004 | Unknown information is neither satisfied nor missing. It does not contribute to the score, which is unavailable if no requirement can be assessed. The explanation shows assessed coverage and how resolving unknown requirements could affect the score when verified requirements exist. |
+| BR-MAT-005 | Mandatory requirements weigh more than optional preferences. The explanation shows each requirement's weight and contribution. A confirmed hard eligibility conflict is shown separately from the overall score. |
 | BR-MAT-006 | A score is an aid to prioritization, not a promise of interview or employment. The interface must state this limitation. |
 | BR-MAT-007 | The person can correct an incorrectly extracted requirement; a correction produces a new result without rewriting the earlier result. |
 | BR-MAT-008 | Recommendations are ordered using the person's current criteria, but the person can inspect why each opportunity was included or excluded. |
