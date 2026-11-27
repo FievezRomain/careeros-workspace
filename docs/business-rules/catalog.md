@@ -45,7 +45,7 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | --- | --- |
 | BR-MAT-001 | A match compares one version of an opportunity with one confirmed profile snapshot. The same pair and scorer version produce the same result. |
 | BR-MAT-002 | A match result identifies satisfied, partially satisfied, missing and unknown requirements. |
-| BR-MAT-003 | Every positive or negative finding is supported by an opportunity statement and, when applicable, a confirmed profile fact. |
+| BR-MAT-003 | Every positive or negative finding is supported by an opportunity statement and, when applicable, a confirmed profile fact. An extracted requirement is a suggestion grounded in a verbatim excerpt from the evaluated opportunity version. |
 | BR-MAT-004 | Unknown information is neither satisfied nor missing. It does not contribute to the score, which is unavailable if no requirement can be assessed. |
 | BR-MAT-005 | Mandatory requirements weigh more than optional preferences. A confirmed hard eligibility conflict is shown separately from the overall score. |
 | BR-MAT-006 | A score is an aid to prioritization, not a promise of interview or employment. The interface must state this limitation. |
@@ -127,7 +127,7 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | ID | Business rule |
 | --- | --- |
 | BR-AI-001 | Generated suggestions are visibly identified as suggestions until accepted by the person. |
-| BR-AI-002 | CareerOS rejects a generated result that lacks required evidence or marks it inconclusive. In AI-assisted web discovery, only validated raw source results can become discovery evidence. |
+| BR-AI-002 | CareerOS rejects generated claims without the required evidence. Requirement extraction reports discarded claims and is inconclusive when none remain. In AI-assisted web discovery, only validated raw source results can become discovery evidence. |
 | BR-AI-003 | Changing the generation provider must not change the business meaning of approvals, ownership, evidence or application states. |
 | BR-AI-004 | The person can reject a suggestion without changing the confirmed facts that produced it. |
 | BR-AI-005 | CareerOS does not make irreversible career decisions, submit applications or contact third parties solely from a generated recommendation. |
