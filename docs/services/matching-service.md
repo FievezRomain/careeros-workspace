@@ -29,6 +29,14 @@ behind it. The versioned explanation exposes evidence coverage and hypothetical
 score bounds over the same requirements. Link-only opportunities carry an explicit
 reason for lacking a score or bounds. See BR-MAT-003 through BR-MAT-006.
 
+## V1-058 recommendation pipeline
+
+Owned, versioned profile and opportunity projections drive evaluations, listing
+transitions and `recommendation.created.v1` outbox events. The matching database
+stores scoped history and version-level extraction evidence. See
+[ADR 0007](../decisions/0007-recommendation-projections.md) and BR-MAT-001 through
+BR-MAT-009 for the projection and notification boundaries.
+
 ## Shared rules
 
 - Version all public contracts.
