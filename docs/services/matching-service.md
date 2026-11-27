@@ -14,6 +14,14 @@ Mandatory requirements have greater weight. A link-only opportunity remains
 unscored until source requirements can be verified. See the service overview
 and `/openapi.json` for the payload contract.
 
+## V1-024 requirement extraction
+
+`POST /v1/internal/requirements/extract` uses the AI gateway's versioned
+`extract-job-requirements` capability for a single owned opportunity version.
+The service checks each source excerpt, records extraction provenance and keeps
+suggestions separate from confirmed scoring inputs. Link-only opportunities are
+unassessed. See the service OpenAPI and BR-MAT-003 and BR-AI-002.
+
 ## Shared rules
 
 - Version all public contracts.
