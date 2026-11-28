@@ -28,3 +28,15 @@ format, opaque object key, byte size and SHA-256 of the declared artifacts.
 - The service applies and verifies the owned database migration before readiness.
   Artifact rendering, object storage access and external-use approval are
   separate capabilities.
+
+## V1 grounded resume drafts
+
+`POST /v1/resume-drafts` builds structured draft entries from confirmed facts in
+the authenticated person's selected profile snapshot. Every entry carries its
+source fact ID, and an optional targeted draft pins an owned opportunity
+version with full text. Job metadata is used to verify eligibility and provenance.
+
+The request accepts source identifiers and an optional set of fact IDs.
+Registration and rendering remain separate steps. The service reads the
+versioned Profile and Jobs APIs using the caller's credential and preserves the
+standard problem response for denied or unavailable sources.
