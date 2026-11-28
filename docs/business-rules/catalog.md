@@ -64,6 +64,7 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | BR-RES-005 | Editing a generated resume creates a new version and preserves the previously approved version. |
 | BR-RES-006 | A resume cannot be presented as current when a referenced profile fact was later withdrawn or corrected; CareerOS warns the person and offers regeneration. |
 | BR-RES-007 | Exported documents must not contain internal scores, hidden prompts, internal comments or unrelated personal information. |
+| BR-RES-008 | A resume retains an immutable, ordered history of registered versions. Each version records its profile snapshot, optional opportunity version and artifact metadata. Retrying the same registration returns the original version. |
 
 ## ATS assessment
 
