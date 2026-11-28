@@ -30,8 +30,8 @@ Repository: https://github.com/FievezRomain/careeros-web
 ## Current navigation
 
 The authenticated shell exposes Overview, Profile, Jobs, Resumes and Applications navigation.
-Profile onboarding is delivered below; Jobs, Resumes and Applications remain protected
-placeholders until their owning V1 stories are delivered.
+Profile and Jobs expose their owned records. Resumes and Applications remain
+protected placeholders until their owning V1 stories are delivered.
 
 ## V1 profile onboarding
 
@@ -56,3 +56,18 @@ placeholders until their owning V1 stories are delivered.
 - The view explains that role, skill, experience, location, work-preference and criteria changes
   request rematching, while contact-only and presentation-only changes do not. The profile service
   remains authoritative for ownership, validation and that classification.
+
+## V1 job catalog and recommendations
+
+- `/app/jobs` presents the matching service's ordered recommendations.
+  `/app/jobs/catalog` shows the owned catalog and `/app/jobs/:id` opens an
+  immutable opportunity version with source provenance and verification state.
+- The web adapter reads `GET /v1/jobs`, `GET /v1/jobs/{opportunityId}`,
+  `GET /v1/recommendations` and `GET /v1/recommendations/{groupId}`.
+  The OIDC client requests `jobs:read` and `matching:recommendations:read`.
+- The detail shows matching evidence only when the job group and evaluated version
+  agree with the owned job response. Matching supplies the findings, weights,
+  uncertainty, eligibility reason and score limitation.
+- The gateway routes `/api/jobs` and `/api/matching` to the corresponding service
+  and strips the prefix. Absolute gateway URLs can be configured through
+  `VITE_JOB_API_BASE_URL` and `VITE_MATCHING_API_BASE_URL`.
