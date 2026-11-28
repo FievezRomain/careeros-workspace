@@ -40,3 +40,15 @@ The request accepts source identifiers and an optional set of fact IDs.
 Registration and rendering remain separate steps. The service reads the
 versioned Profile and Jobs APIs using the caller's credential and preserves the
 standard problem response for denied or unavailable sources.
+
+## V1 PDF and DOCX exports
+
+`POST /v1/resumes/{resume_id}/exports` renders and verifies text extraction for
+both formats from the same grounded draft. Their checksums and object references
+are registered together as an immutable version. A retry using the original
+idempotency key completes an interrupted write or returns the same version.
+
+The service stores bytes in its private S3-compatible bucket using conditional
+object creation. `GET /v1/resumes/{resume_id}/versions/{number}/artifacts/{format}`
+enforces ownership and integrity before returning bytes. The template uses a
+single column and standard headings to preserve readable extraction order.
