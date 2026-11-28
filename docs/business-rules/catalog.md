@@ -36,7 +36,7 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 | BR-JOB-003 | Repeated discoveries of the same role from the same employer are grouped when they represent the same opportunity. Distinct opportunities with the same title remain separate. The person can separate them if the grouping is wrong. |
 | BR-JOB-004 | Materially changed source content or newly verified full text creates a new opportunity version and preserves prior versions, including the version used by an existing application. |
 | BR-JOB-005 | An opportunity can be marked saved, ignored, expired or converted into an application. Ignored and expired opportunities are excluded from active recommendations. |
-| BR-JOB-006 | CareerOS distinguishes information stated by the source from information inferred or left unknown. A link awaiting verification identifies its unknown fields and is ineligible for full resume generation until the full offer is verified or explicitly imported. |
+| BR-JOB-006 | CareerOS distinguishes information stated by the source from information inferred or left unknown. A link awaiting verification identifies its unknown fields. Drafting a resume for that opportunity requires verified or explicitly imported full text. |
 | BR-JOB-007 | A newly qualifying opportunity creates one recommendation intent when it is actionable and meets the person's saved criteria and threshold. Retrying the same evaluation or updating an active recommendation does not repeat that intent. |
 
 ## Matching and recommendations
@@ -57,9 +57,9 @@ Status: V1 baseline. This document contains functional rules only. Technical des
 
 | ID | Business rule |
 | --- | --- |
-| BR-RES-001 | A generated resume may use only confirmed facts from the selected profile snapshot. |
-| BR-RES-002 | CareerOS may rephrase a confirmed fact but must not invent an employer, title, date, result, metric, skill, certification or responsibility. |
-| BR-RES-003 | A generated resume identifies the opportunity and profile snapshot used to create it. |
+| BR-RES-001 | A generated resume may use only confirmed facts from the selected profile snapshot. Each draft entry identifies its source fact, and a request for an unavailable or unconfirmed fact is rejected. |
+| BR-RES-002 | CareerOS may rephrase a confirmed fact but must not invent an employer, title, date, result, metric, skill, certification or responsibility. Generation accepts source identifiers and rejects caller-supplied resume claims. |
+| BR-RES-003 | A generated resume identifies its profile snapshot and, for a targeted resume, the owned opportunity version used to create it. |
 | BR-RES-004 | The person reviews and explicitly approves a resume version before it can be included in an external application. |
 | BR-RES-005 | Editing a generated resume creates a new version and preserves the previously approved version. |
 | BR-RES-006 | A resume cannot be presented as current when a referenced profile fact was later withdrawn or corrected; CareerOS warns the person and offers regeneration. |
